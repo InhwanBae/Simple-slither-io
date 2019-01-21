@@ -447,9 +447,9 @@ def gameLoop():
         # 게임이 끝났을 때
         while gameOver == True:
             gameDisplay.fill(black)
-            message("Game Over", red, -50, "large")
-            message("Score: " + str(snakeLength - 3), red, 50, size="medium")
-            message("Game Over, press C to play again or Q to quit", red, 100, size="small")
+            message("Game Over", white, -50, "large")
+            message("Score: " + str(snakeLength - 3), white, 50, size="medium")
+            message("Game Over, press C to play again or Q to quit", white, 100, size="small")
             pygame.display.update()
 
             for event in pygame.event.get():
