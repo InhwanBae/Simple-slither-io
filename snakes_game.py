@@ -1,21 +1,23 @@
 import pygame
 import time
 import random
+import argparse
 
 pygame.init()
+fancy_graphic = False
 
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 blue = (0, 0, 255)
 
-display_width = 1200
-display_height = 1000
+display_width = 800
+display_height = 800
 
 block_size = 20
-apple_count = 500
+apple_count = 300
 #게임 속도
-fps = 100
+fps = 15
 font = pygame.font.SysFont("arialback", 50)
 smallfont = pygame.font.SysFont("arialblack", 25)
 largefont = pygame.font.SysFont("arialblack", 80)
@@ -24,37 +26,150 @@ clock = pygame.time.Clock()
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("SLITHER.IO")
 
-img = pygame.image.load("snakeHead.png")
+img = pygame.image.load("snakeEye.png")
+bg = pygame.image.load("background.png")
+
+body1 = pygame.image.load("snakeBody1.png")
+body2 = pygame.image.load("snakeBody2.png")
+body3 = pygame.image.load("snakeBody3.png")
+body4 = pygame.image.load("snakeBody4.png")
+body5 = pygame.image.load("snakeBody5.png")
+body6 = pygame.image.load("snakeBody6.png")
+body7 = pygame.image.load("snakeBody7.png")
+body8 = pygame.image.load("snakeBody8.png")
+eye1 = pygame.image.load("snakeEye1.png")
+eye2 = pygame.image.load("snakeEye2.png")
+eye3 = pygame.image.load("snakeEye3.png")
+eye4 = pygame.image.load("snakeEye4.png")
+eye5 = pygame.image.load("snakeEye5.png")
+eye6 = pygame.image.load("snakeEye6.png")
+eye7 = pygame.image.load("snakeEye7.png")
+eye8 = pygame.image.load("snakeEye8.png")
+shader = pygame.image.load("snakeShader40.png")
+
+return_direction = [0, 0, 0, 0, 0, 0, 0]
 
 
 def snake(block_size, snakelist, slot):
-    if slot == 1:
-        color = white
-    elif slot == 2:
-        color = blue
-    elif slot == 3:
-        color = blue
-    elif slot == 4:
-        color = blue
-    elif slot == 5:
-        color = blue
-    elif slot == 6:
-        color = blue
-    elif slot == 7:
-        color = blue
-    elif slot == 8:
-        color = blue
-    gameDisplay.blit(img, (snakelist[-1][0], snakelist[-1][1]))
-    for XnY in snakelist[:-1]:
-        pygame.draw.rect(gameDisplay, color, [XnY[0], XnY[1], block_size, block_size])
+    if fancy_graphic:
+        body = body1
+        if slot == 1:
+            body = body1
+        elif slot == 2:
+            body = body2
+        elif slot == 3:
+            body = body3
+        elif slot == 4:
+            body = body4
+        elif slot == 5:
+            body = body5
+        elif slot == 6:
+            body = body6
+        elif slot == 7:
+            body = body7
+        elif slot == 8:
+            body = body8
+        # gameDisplay.blit(img, (snakelist[-1][0], snakelist[-1][1]))
 
-def snakeBot(snakeList, appleList, enemyList):
+        # 1/2 지점 생성
+        bodylist = []
+        for i in range(len(snakelist)):
+            # bodylist.append(snakelist[i])
+            if i < len(snakelist) - 1:
+                bodylist.append(
+                    [(snakelist[i][0] + snakelist[i + 1][0]) / 2, (snakelist[i][1] + snakelist[i + 1][1]) / 2])
+        snakebody = []
+        snakebody.append(snakelist[0])
+        for i in range(len(bodylist)):
+            snakebody.append(bodylist[i])
+
+            if i < len(bodylist) - 1:
+                snakebody.append([(bodylist[i][0] + bodylist[i + 1][0]) / 2, (bodylist[i][1] + bodylist[i + 1][1]) / 2])
+        snakebody.append(snakelist[len(snakelist) - 1])
+
+        # 1/4 지점 생성
+        bodylist2 = []
+        for i in range(len(snakebody)):
+            if i < len(snakebody) - 1:
+                bodylist2.append(
+                    [(snakebody[i][0] + snakebody[i + 1][0]) / 2, (snakebody[i][1] + snakebody[i + 1][1]) / 2])
+        snakebody2 = []
+        snakebody2.append(snakebody[0])
+        for i in range(len(bodylist2)):
+            snakebody2.append(bodylist2[i])
+
+            if i < len(bodylist2) - 1:
+                snakebody2.append(
+                    [(bodylist2[i][0] + bodylist2[i + 1][0]) / 2, (bodylist2[i][1] + bodylist2[i + 1][1]) / 2])
+        snakebody2.append(snakebody[len(snakebody) - 1])
+
+        for i in range(len(snakebody2)):
+            if not i % 2 == 1:
+                gameDisplay.blit(shader, (snakebody2[i][0] - 10, snakebody2[i][1] - 8))
+
+        for XnY in snakebody2:
+            gameDisplay.blit(body, (XnY[0] - 2, XnY[1] - 2))
+
+        # 눈 생성
+        if len(snakelist) > 1:
+            if snakebody2[len(snakebody2) - 1][0] == snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye1, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye2, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] == snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye3, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye4, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] == snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye5, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye6, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] == snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye7, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
+                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
+                gameDisplay.blit(eye8, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+        else:
+            gameDisplay.blit(eye1, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+
+    else:
+        if slot == 1:
+            color = white
+        elif slot == 2:
+            color = blue
+        elif slot == 3:
+            color = blue
+        elif slot == 4:
+            color = blue
+        elif slot == 5:
+            color = blue
+        elif slot == 6:
+            color = blue
+        elif slot == 7:
+            color = blue
+        elif slot == 8:
+            color = blue
+
+        for XnY in snakelist:
+            pygame.draw.rect(gameDisplay, color, [XnY[0], XnY[1], block_size, block_size])
+
+        gameDisplay.blit(img, (snakelist[-1][0], snakelist[-1][1]))
+
+
+def snakeBot(_snakeList, _appleList, _enemyList):
     # 4방위 정의
     #    1
     # 3  0  4
     #    2
 
-    snakeHead = snakeList[len(snakeList)-1]
+    snakeHead = _snakeList[len(_snakeList)-1]
     xhead = snakeHead[0]
     yhead = snakeHead[1]
 
@@ -66,6 +181,20 @@ def snakeBot(snakeList, appleList, enemyList):
     yapos = [yhead - block_size * 5, yhead - block_size * 4, yhead - block_size * 3, yhead - block_size * 2, yhead - block_size, yhead, yhead + block_size, yhead + block_size * 2, yhead + block_size * 3, yhead + block_size * 4, yhead + block_size * 5]
     xabpos = [xhead - block_size, xhead, xhead + block_size]
     yabpos = [yhead - block_size, yhead, yhead + block_size]
+
+    snakeList = []
+    appleList = []
+    enemyList = []
+
+    for i in _snakeList:
+        if xhead - block_size * 5 <= i[0] <= xhead + block_size * 5 and yhead - block_size * 5 <= i[1] <= yhead + block_size * 5:
+            snakeList.append(i)
+    for j in _appleList:
+        if xhead - block_size * 5 <= j[0] <= xhead + block_size * 5 and yhead - block_size * 5 <= j[1] <= yhead + block_size * 5:
+            appleList.append(j)
+    for k in _enemyList:
+        if xhead - block_size * 5 <= k[0] <= xhead + block_size * 5 and yhead - block_size * 5 <= k[1] <= yhead + block_size * 5:
+            enemyList.append(k)
 
     # 숫자 같지 않도록 0~1의 난수로 방향 랜덤 가중치
     up = random.random()
@@ -81,13 +210,13 @@ def snakeBot(snakeList, appleList, enemyList):
                     if xhead <= apple[0] and yhead <= apple[1]:
                         right += 20
                         down += 20
-                    elif xhead <= apple[0] and yhead >= apple[1]:
+                    if xhead <= apple[0] and yhead >= apple[1]:
                         right += 20
                         up += 20
-                    elif xhead >= apple[0] and yhead <= apple[1]:
+                    if xhead >= apple[0] and yhead <= apple[1]:
                         left += 20
                         down += 20
-                    elif xhead >= apple[0] and yhead >= apple[1]:
+                    if xhead >= apple[0] and yhead >= apple[1]:
                         left += 20
                         up += 20
 
@@ -98,13 +227,13 @@ def snakeBot(snakeList, appleList, enemyList):
                     if xhead <= apple[0] and yhead <= apple[1]:
                         right += 200
                         down += 200
-                    elif xhead <= apple[0] and yhead >= apple[1]:
+                    if xhead <= apple[0] and yhead >= apple[1]:
                         right += 200
                         up += 200
-                    elif xhead >= apple[0] and yhead <= apple[1]:
+                    if xhead >= apple[0] and yhead <= apple[1]:
                         left += 200
                         down += 200
-                    elif xhead >= apple[0] and yhead >= apple[1]:
+                    if xhead >= apple[0] and yhead >= apple[1]:
                         left += 200
                         up += 200
 
@@ -115,13 +244,13 @@ def snakeBot(snakeList, appleList, enemyList):
                     if xhead <= apple[0] and yhead <= apple[1]:
                         right += 80
                         down += 80
-                    elif xhead <= apple[0] and yhead >= apple[1]:
+                    if xhead <= apple[0] and yhead >= apple[1]:
                         right += 80
                         up += 80
-                    elif xhead >= apple[0] and yhead <= apple[1]:
+                    if xhead >= apple[0] and yhead <= apple[1]:
                         left += 80
                         down += 80
-                    elif xhead >= apple[0] and yhead >= apple[1]:
+                    if xhead >= apple[0] and yhead >= apple[1]:
                         left += 80
                         up += 80
 
@@ -130,13 +259,13 @@ def snakeBot(snakeList, appleList, enemyList):
                     if xhead < enemy[0] and yhead < enemy[1]:
                         right -= 600 / abs(enemy[0] - xhead)
                         down -= 600 / abs(enemy[1] - yhead)
-                    elif xhead < enemy[0] and yhead > enemy[1]:
+                    if xhead < enemy[0] and yhead > enemy[1]:
                         right -= 600 / abs(enemy[0] - xhead)
                         up -= 600 / abs(enemy[1] - yhead)
-                    elif xhead > enemy[0] and yhead < enemy[1]:
+                    if xhead > enemy[0] and yhead < enemy[1]:
                         left -= 600 / abs(enemy[0] - xhead)
                         down -= 600 / abs(enemy[1] - yhead)
-                    elif xhead > enemy[0] and yhead > enemy[1]:
+                    if xhead > enemy[0] and yhead > enemy[1]:
                         left -= 600 / abs(enemy[0] - xhead)
                         up -= 600 / abs(enemy[1] - yhead)
 
@@ -145,13 +274,13 @@ def snakeBot(snakeList, appleList, enemyList):
                     if xhead <= body[0] and yhead <= body[1]:
                         right -= 100 / (abs(body[0] - xhead) + 20)
                         down -= 100 / (abs(body[1] - yhead) + 20)
-                    elif xhead <= body[0] and yhead >= body[1]:
+                    if xhead <= body[0] and yhead >= body[1]:
                         right -= 100 / (abs(body[0] - xhead) + 20)
                         up -= 100 / (abs(body[1] - yhead) + 20)
-                    elif xhead >= body[0] and yhead <= body[1]:
+                    if xhead >= body[0] and yhead <= body[1]:
                         left -= 100 / (abs(body[0] - xhead) + 20)
                         down -= 100 / (abs(body[1] - yhead) + 20)
-                    elif xhead >= body[0] and yhead >= body[1]:
+                    if xhead >= body[0] and yhead >= body[1]:
                         left -= 100 / (abs(body[0] - xhead) + 20)
                         up -= 100 / (abs(body[1] - yhead) + 20)
 
@@ -196,6 +325,15 @@ def snakeBot(snakeList, appleList, enemyList):
     return direction
 
 
+def snakeBotMulti(botData):
+    """멀티프로세싱 전용 함수"""
+    # print("Process start")
+    direction = snakeBot(botData[1], botData[2], botData[3])
+    return_direction[botData[0]] = direction
+    #print("bot", botData[0] + 2, "direction:", direction)
+    # print("Process end")
+
+
 def text_objects(text, color, size):
     if size == "small":
         textSurface = smallfont.render(text, True, color)
@@ -210,9 +348,6 @@ def message(msg, color, y_displace=0, size="small"):
     textSurf, textRect = text_objects(msg, color, size)
     textRect.center = (display_width / 2), (display_height / 2) + y_displace
     gameDisplay.blit(textSurf, textRect)
-
-
-
 
 
 def gameLoop():
@@ -258,7 +393,7 @@ def gameLoop():
 
         # 값 지정
         if len(snakeList) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
-            snakeList.append(randPosition)
+            snakeList.append([lead_x, lead_y])
             continue
         if len(snakeList2) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
             snakeList2.append(randPosition)
@@ -305,12 +440,6 @@ def gameLoop():
 
         if noApple == True:
             appleList.append(genApple)
-
-
-
-#TODO: 게임 끝나는 조건 추가(화면에 더이상 적을 둘 자리가 없을 경우.)
-
-
 
     # 게임 구현
     while not gameExit:
@@ -631,6 +760,8 @@ def gameLoop():
 
         # 게임 화면에 구현
         gameDisplay.fill(black)
+        if fancy_graphic:
+            gameDisplay.blit(bg, (0, 0))
 
         for apple in appleList:
             pygame.draw.rect(gameDisplay, red, [apple[0], apple[1], block_size, block_size])
@@ -653,4 +784,16 @@ def gameLoop():
     pygame.quit()
     quit()
 
-gameLoop()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='--fancy: Fancy Graphics')
+    parser.add_argument("-f", "--fancy", required=False)
+    args = parser.parse_args()
+    fancy = args.fancy
+    if fancy in ["True", "true", "TRUE", "t", "T"]:
+        fancy_graphic = True
+    #fancy_graphic = True
+    gameLoop()
+
+
+
