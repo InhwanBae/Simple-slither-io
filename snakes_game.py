@@ -1,5 +1,4 @@
 import pygame
-import time
 import random
 import argparse
 
@@ -16,7 +15,8 @@ display_height = 800
 
 block_size = 20
 apple_count = 300
-#게임 속도
+
+# Game Speed
 fps = 15
 font = pygame.font.SysFont("arialback", 50)
 smallfont = pygame.font.SysFont("arialblack", 25)
@@ -29,22 +29,14 @@ pygame.display.set_caption("SLITHER.IO")
 img = pygame.image.load("snakeEye.png")
 bg = pygame.image.load("background.png")
 
-body1 = pygame.image.load("snakeBody1.png")
-body2 = pygame.image.load("snakeBody2.png")
-body3 = pygame.image.load("snakeBody3.png")
-body4 = pygame.image.load("snakeBody4.png")
-body5 = pygame.image.load("snakeBody5.png")
-body6 = pygame.image.load("snakeBody6.png")
-body7 = pygame.image.load("snakeBody7.png")
-body8 = pygame.image.load("snakeBody8.png")
-eye1 = pygame.image.load("snakeEye1.png")
-eye2 = pygame.image.load("snakeEye2.png")
-eye3 = pygame.image.load("snakeEye3.png")
-eye4 = pygame.image.load("snakeEye4.png")
-eye5 = pygame.image.load("snakeEye5.png")
-eye6 = pygame.image.load("snakeEye6.png")
-eye7 = pygame.image.load("snakeEye7.png")
-eye8 = pygame.image.load("snakeEye8.png")
+bodyimg = []
+for i in range(1, 9):
+    bodyimg.append(pygame.image.load("snakeBody" + str(i) + ".png"))
+
+eyeimg = []
+for i in range(1, 9):
+    eyeimg.append(pygame.image.load("snakeEye" + str(i) + ".png"))
+
 shader = pygame.image.load("snakeShader40.png")
 
 return_direction = [0, 0, 0, 0, 0, 0, 0]
@@ -52,29 +44,14 @@ return_direction = [0, 0, 0, 0, 0, 0, 0]
 
 def snake(block_size, snakelist, slot):
     if fancy_graphic:
-        body = body1
-        if slot == 1:
-            body = body1
-        elif slot == 2:
-            body = body2
-        elif slot == 3:
-            body = body3
-        elif slot == 4:
-            body = body4
-        elif slot == 5:
-            body = body5
-        elif slot == 6:
-            body = body6
-        elif slot == 7:
-            body = body7
-        elif slot == 8:
-            body = body8
-        # gameDisplay.blit(img, (snakelist[-1][0], snakelist[-1][1]))
+        body = bodyimg[0]
 
-        # 1/2 지점 생성
+        if slot in range(1, 9):
+            body = bodyimg[slot-1]
+
+        # Generate 1/2 points
         bodylist = []
         for i in range(len(snakelist)):
-            # bodylist.append(snakelist[i])
             if i < len(snakelist) - 1:
                 bodylist.append(
                     [(snakelist[i][0] + snakelist[i + 1][0]) / 2, (snakelist[i][1] + snakelist[i + 1][1]) / 2])
@@ -85,9 +62,9 @@ def snake(block_size, snakelist, slot):
 
             if i < len(bodylist) - 1:
                 snakebody.append([(bodylist[i][0] + bodylist[i + 1][0]) / 2, (bodylist[i][1] + bodylist[i + 1][1]) / 2])
-        snakebody.append(snakelist[len(snakelist) - 1])
+        snakebody.append(snakelist[-1])
 
-        # 1/4 지점 생성
+        # Generate 1/4 points
         bodylist2 = []
         for i in range(len(snakebody)):
             if i < len(snakebody) - 1:
@@ -101,7 +78,7 @@ def snake(block_size, snakelist, slot):
             if i < len(bodylist2) - 1:
                 snakebody2.append(
                     [(bodylist2[i][0] + bodylist2[i + 1][0]) / 2, (bodylist2[i][1] + bodylist2[i + 1][1]) / 2])
-        snakebody2.append(snakebody[len(snakebody) - 1])
+        snakebody2.append(snakebody[-1])
 
         for i in range(len(snakebody2)):
             if not i % 2 == 1:
@@ -110,34 +87,26 @@ def snake(block_size, snakelist, slot):
         for XnY in snakebody2:
             gameDisplay.blit(body, (XnY[0] - 2, XnY[1] - 2))
 
-        # 눈 생성
+        # Draw eye
         if len(snakelist) > 1:
-            if snakebody2[len(snakebody2) - 1][0] == snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye1, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye2, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] == snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye3, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] > snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye4, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] == snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye5, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] > snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye6, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] == snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye7, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
-            if snakebody2[len(snakebody2) - 1][0] < snakebody2[len(snakebody2) - 3][0] and \
-                    snakebody2[len(snakebody2) - 1][1] < snakebody2[len(snakebody2) - 3][1]:
-                gameDisplay.blit(eye8, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] == snakebody2[-3][0] and snakebody2[-1][1] < snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[0], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] > snakebody2[-3][0] and snakebody2[-1][1] < snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[1], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] > snakebody2[-3][0] and snakebody2[-1][1] == snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[2], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] > snakebody2[-3][0] and snakebody2[-1][1] > snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[3], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] == snakebody2[-3][0] and snakebody2[-1][1] > snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[4], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] < snakebody2[-3][0] and snakebody2[-1][1] > snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[5], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] < snakebody2[-3][0] and snakebody2[-1][1] == snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[6], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            if snakebody2[-1][0] < snakebody2[-3][0] and snakebody2[-1][1] < snakebody2[-3][1]:
+                gameDisplay.blit(eyeimg[7], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
         else:
-            gameDisplay.blit(eye1, (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
+            gameDisplay.blit(eyeimg[0], (snakelist[-1][0] - 2, snakelist[-1][1] - 2))
 
     else:
         if slot == 1:
@@ -164,12 +133,12 @@ def snake(block_size, snakelist, slot):
 
 
 def snakeBot(_snakeList, _appleList, _enemyList):
-    # 4방위 정의
+    # Define cardinal points
     #    1
     # 3  0  4
     #    2
 
-    snakeHead = _snakeList[len(_snakeList)-1]
+    snakeHead = _snakeList[-1]
     xhead = snakeHead[0]
     yhead = snakeHead[1]
 
@@ -177,8 +146,12 @@ def snakeBot(_snakeList, _appleList, _enemyList):
             xhead + block_size, xhead + block_size * 2, xhead + block_size * 3]
     ypos = [yhead - block_size * 3, yhead - block_size * 2, yhead - block_size, yhead,
             yhead + block_size, yhead + block_size * 2, yhead + block_size * 3]
-    xapos = [xhead - block_size * 5, xhead - block_size * 4, xhead - block_size * 3, xhead - block_size * 2, xhead - block_size, xhead, xhead + block_size, xhead + block_size * 2, xhead + block_size * 3, xhead + block_size * 4, xhead + block_size * 5]
-    yapos = [yhead - block_size * 5, yhead - block_size * 4, yhead - block_size * 3, yhead - block_size * 2, yhead - block_size, yhead, yhead + block_size, yhead + block_size * 2, yhead + block_size * 3, yhead + block_size * 4, yhead + block_size * 5]
+    xapos = [xhead - block_size * 5, xhead - block_size * 4, xhead - block_size * 3, xhead - block_size * 2,
+             xhead - block_size, xhead, xhead + block_size, xhead + block_size * 2, xhead + block_size * 3,
+             xhead + block_size * 4, xhead + block_size * 5]
+    yapos = [yhead - block_size * 5, yhead - block_size * 4, yhead - block_size * 3, yhead - block_size * 2,
+             yhead - block_size, yhead, yhead + block_size, yhead + block_size * 2, yhead + block_size * 3,
+             yhead + block_size * 4, yhead + block_size * 5]
     xabpos = [xhead - block_size, xhead, xhead + block_size]
     yabpos = [yhead - block_size, yhead, yhead + block_size]
 
@@ -196,13 +169,13 @@ def snakeBot(_snakeList, _appleList, _enemyList):
         if xhead - block_size * 5 <= k[0] <= xhead + block_size * 5 and yhead - block_size * 5 <= k[1] <= yhead + block_size * 5:
             enemyList.append(k)
 
-    # 숫자 같지 않도록 0~1의 난수로 방향 랜덤 가중치
+    # Random weights with a random number between 0 and 1
     up = random.random()
     down = random.random()
     left = random.random()
     right = random.random()
-    #random.random()
 
+    # AI path calculation using weights
     for i in xapos:
         for j in yapos:
             for apple in appleList:
@@ -326,7 +299,7 @@ def snakeBot(_snakeList, _appleList, _enemyList):
 
 
 def snakeBotMulti(botData):
-    """멀티프로세싱 전용 함수"""
+    """Multiprocessing functions"""
     # print("Process start")
     direction = snakeBot(botData[1], botData[2], botData[3])
     return_direction[botData[0]] = direction
@@ -351,15 +324,15 @@ def message(msg, color, y_displace=0, size="small"):
 
 
 def gameLoop():
-    # 게임 종료 조건
+    # Game end condition
     start = 0
     end = 0
 
-    # 게임 정의
+    # Game definition
     gameExit = False
     gameOver = False
 
-    # 지렁이 정의
+    # Earthworm definition
     snakeList = []
     snakeList2 = []
     snakeList3 = []
@@ -369,7 +342,7 @@ def gameLoop():
     snakeList7 = []
     snakeList8 = []
 
-    # 지렁이 길이 정의
+    # Definition of snake length
     snakeLength = 3
     snakeLength2 = 3
     snakeLength3 = 3
@@ -386,12 +359,12 @@ def gameLoop():
 
     appleList = []
 
-    # 지렁이들의 위치 생성
+    # Creation of the location of snakes
     while True:
         randPosition = [round(random.randrange(0, display_width - block_size) / 20.0) * 20.0,
                       round(random.randrange(0, display_width - block_size) / 20.0) * 20.0]
 
-        # 값 지정
+        # Specify a value
         if len(snakeList) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
             snakeList.append([lead_x, lead_y])
             continue
@@ -417,22 +390,22 @@ def gameLoop():
             snakeList8.append(randPosition)
             continue
 
-        # 종료조건
+        # Termination condition
         if len(snakeList) > 0 and len(snakeList2) > 0 and len(snakeList3) > 0 and len(snakeList4) > 0 and len(snakeList5) > 0 and len(snakeList6) > 0 and len(snakeList7) > 0 and len(snakeList8) > 0:
             break
 
-    # 사과 생성
+    # Generate apple
     while len(appleList) <= apple_count:
         randAppleX = round(random.randrange(0, display_width - block_size) / 20.0) * 20.0
         randAppleY = round(random.randrange(0, display_height - block_size) / 20.0) * 20.0
         genApple = [randAppleX, randAppleY]
 
-        # 같은 위치에 사과가 생기지 않도록 함
+        # Avoid apples in the same location
         noApple = True
         for apple in appleList:
             if genApple == apple:
                 noApple = False
-        # 뱀 위에 사과가 생기지 않도록 함
+        # Avoiding apples on snakes
         for snakeAll in [snakeList, snakeList2, snakeList3, snakeList4, snakeList5, snakeList6, snakeList7, snakeList8]:
             for snakeBody in snakeAll:
                 if genApple == snakeBody:
@@ -441,10 +414,10 @@ def gameLoop():
         if noApple == True:
             appleList.append(genApple)
 
-    # 게임 구현
+    # Game implementation
     while not gameExit:
 
-        # 게임이 끝났을 때
+        # When the game is over
         while gameOver == True:
             gameDisplay.fill(black)
             message("Game Over", white, -50, "large")
@@ -460,7 +433,7 @@ def gameLoop():
                         gameExit = True
                         gameOver = False
 
-        # 사용자 입력 처리문
+        # User input processing statement
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True
@@ -479,49 +452,49 @@ def gameLoop():
                     lead_y_change = block_size
                     lead_x_change = 0
 
-        # 맵 밖으로 나갔을 때 사망 처리
+        # Death when leaving the map
         if lead_x >= display_width or lead_x < 0 or lead_y >= display_height or lead_y < 0:
             gameOver = True
 
-        # 사과를 먹었을 때 처리
+        # When ate an apple
         for apple in appleList:
-            if snakeList[len(snakeList)-1] == apple:
+            if snakeList[-1] == apple:
                 snakeLength += 1
                 appleList.remove(apple)
-            if snakeList2[len(snakeList2)-1] == apple:
+            if snakeList2[-1] == apple:
                 snakeLength2 += 1
                 appleList.remove(apple)
-            if snakeList3[len(snakeList3)-1] == apple:
+            if snakeList3[-1] == apple:
                 snakeLength3 += 1
                 appleList.remove(apple)
-            if snakeList4[len(snakeList4)-1] == apple:
+            if snakeList4[-1] == apple:
                 snakeLength4 += 1
                 appleList.remove(apple)
-            if snakeList5[len(snakeList5)-1] == apple:
+            if snakeList5[-1] == apple:
                 snakeLength5 += 1
                 appleList.remove(apple)
-            if snakeList6[len(snakeList6)-1] == apple:
+            if snakeList6[-1] == apple:
                 snakeLength6 += 1
                 appleList.remove(apple)
-            if snakeList7[len(snakeList7)-1] == apple:
+            if snakeList7[-1] == apple:
                 snakeLength7 += 1
                 appleList.remove(apple)
-            if snakeList8[len(snakeList8)-1] == apple:
+            if snakeList8[-1] == apple:
                 snakeLength8 += 1
                 appleList.remove(apple)
 
-        # 사과 생성
+        # Generate apple
         while len(appleList) <= apple_count and len(appleList) + len(snakeList) + len(snakeList2) + len(snakeList3) + len(snakeList4) + len(snakeList5) + len(snakeList6) + len(snakeList7) + len(snakeList8) < 50*50:
             randAppleX = round(random.randrange(0, display_width - block_size) / 20.0) * 20.0
             randAppleY = round(random.randrange(0, display_height - block_size) / 20.0) * 20.0
             genApple = [randAppleX, randAppleY]
 
-            # 같은 위치에 사과가 생기지 않도록 함
+            # Avoid apples in the same location
             noApple = True
             for apple in appleList:
                 if genApple == apple:
                     noApple = False
-            # 뱀 위에 사과가 생기지 않도록 함
+            # Avoiding apples on snakes
             for snakeAll in [snakeList, snakeList2, snakeList3, snakeList4, snakeList5, snakeList6, snakeList7, snakeList8]:
                 for snakeBody in snakeAll:
                     if genApple == snakeBody:
@@ -531,27 +504,27 @@ def gameLoop():
                 appleList.append(genApple)
 
 
-        # 머리의 위치 추가
+        # Add head position
         lead_x += lead_x_change
         lead_y += lead_y_change
 
-        # 머리 이동,리스트 추가 및 맨 마지막 꼬리 제거
+        # Move head, add list and remove last tail
         snakeList.append([lead_x, lead_y])
         if len(snakeList) > snakeLength:
             del snakeList[0]
 
-        # Snake Bot 이동
+        # Move Snake Bot
         #bot2
         status = snakeBot(snakeList2, appleList,
                           snakeList + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8)
         if status == 1:
-            snakeList2.append([snakeList2[len(snakeList2) - 1][0], snakeList2[len(snakeList2) - 1][1] - block_size])
+            snakeList2.append([snakeList2[-1][0], snakeList2[- 1][1] - block_size])
         elif status == 2:
-            snakeList2.append([snakeList2[len(snakeList2) - 1][0], snakeList2[len(snakeList2) - 1][1] + block_size])
+            snakeList2.append([snakeList2[-1][0], snakeList2[-1][1] + block_size])
         elif status == 3:
-            snakeList2.append([snakeList2[len(snakeList2) - 1][0] - block_size, snakeList2[len(snakeList2) - 1][1]])
+            snakeList2.append([snakeList2[-1][0] - block_size, snakeList2[-1][1]])
         elif status == 4:
-            snakeList2.append([snakeList2[len(snakeList2) - 1][0] + block_size, snakeList2[len(snakeList2) - 1][1]])
+            snakeList2.append([snakeList2[-1][0] + block_size, snakeList2[-1][1]])
         if len(snakeList2) > snakeLength2:
             del snakeList2[0]
 
@@ -559,13 +532,13 @@ def gameLoop():
         status = snakeBot(snakeList3, appleList,
                           snakeList + snakeList2 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8)
         if status == 1:
-            snakeList3.append([snakeList3[len(snakeList3) - 1][0], snakeList3[len(snakeList3) - 1][1] - block_size])
+            snakeList3.append([snakeList3[-1][0], snakeList3[-1][1] - block_size])
         elif status == 2:
-            snakeList3.append([snakeList3[len(snakeList3) - 1][0], snakeList3[len(snakeList3) - 1][1] + block_size])
+            snakeList3.append([snakeList3[-1][0], snakeList3[-1][1] + block_size])
         elif status == 3:
-            snakeList3.append([snakeList3[len(snakeList3) - 1][0] - block_size, snakeList3[len(snakeList3) - 1][1]])
+            snakeList3.append([snakeList3[-1][0] - block_size, snakeList3[-1][1]])
         elif status == 4:
-            snakeList3.append([snakeList3[len(snakeList3) - 1][0] + block_size, snakeList3[len(snakeList3) - 1][1]])
+            snakeList3.append([snakeList3[-1][0] + block_size, snakeList3[-1][1]])
         if len(snakeList3) > snakeLength3:
             del snakeList3[0]
 
@@ -573,13 +546,13 @@ def gameLoop():
         status = snakeBot(snakeList4, appleList,
                           snakeList + snakeList2 + snakeList3 + snakeList5 + snakeList6 + snakeList7 + snakeList8)
         if status == 1:
-            snakeList4.append([snakeList4[len(snakeList4) - 1][0], snakeList4[len(snakeList4) - 1][1] - block_size])
+            snakeList4.append([snakeList4[-1][0], snakeList4[-1][1] - block_size])
         elif status == 2:
-            snakeList4.append([snakeList4[len(snakeList4) - 1][0], snakeList4[len(snakeList4) - 1][1] + block_size])
+            snakeList4.append([snakeList4[-1][0], snakeList4[-1][1] + block_size])
         elif status == 3:
-            snakeList4.append([snakeList4[len(snakeList4) - 1][0] - block_size, snakeList4[len(snakeList4) - 1][1]])
+            snakeList4.append([snakeList4[-1][0] - block_size, snakeList4[-1][1]])
         elif status == 4:
-            snakeList4.append([snakeList4[len(snakeList4) - 1][0] + block_size, snakeList4[len(snakeList4) - 1][1]])
+            snakeList4.append([snakeList4[-1][0] + block_size, snakeList4[-1][1]])
         if len(snakeList4) > snakeLength4:
             del snakeList4[0]
 
@@ -587,13 +560,13 @@ def gameLoop():
         status = snakeBot(snakeList5, appleList,
                           snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList6 + snakeList7 + snakeList8)
         if status == 1:
-            snakeList5.append([snakeList5[len(snakeList5) - 1][0], snakeList5[len(snakeList5) - 1][1] - block_size])
+            snakeList5.append([snakeList5[-1][0], snakeList5[-1][1] - block_size])
         elif status == 2:
-            snakeList5.append([snakeList5[len(snakeList5) - 1][0], snakeList5[len(snakeList5) - 1][1] + block_size])
+            snakeList5.append([snakeList5[-1][0], snakeList5[-1][1] + block_size])
         elif status == 3:
-            snakeList5.append([snakeList5[len(snakeList5) - 1][0] - block_size, snakeList5[len(snakeList5) - 1][1]])
+            snakeList5.append([snakeList5[-1][0] - block_size, snakeList5[-1][1]])
         elif status == 4:
-            snakeList5.append([snakeList5[len(snakeList5) - 1][0] + block_size, snakeList5[len(snakeList5) - 1][1]])
+            snakeList5.append([snakeList5[-1][0] + block_size, snakeList5[-1][1]])
         if len(snakeList5) > snakeLength5:
             del snakeList5[0]
 
@@ -601,13 +574,13 @@ def gameLoop():
         status = snakeBot(snakeList6, appleList,
                           snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList7 + snakeList8)
         if status == 1:
-            snakeList6.append([snakeList6[len(snakeList6) - 1][0], snakeList6[len(snakeList6) - 1][1] - block_size])
+            snakeList6.append([snakeList6[-1][0], snakeList6[-1][1] - block_size])
         elif status == 2:
-            snakeList6.append([snakeList6[len(snakeList6) - 1][0], snakeList6[len(snakeList6) - 1][1] + block_size])
+            snakeList6.append([snakeList6[-1][0], snakeList6[-1][1] + block_size])
         elif status == 3:
-            snakeList6.append([snakeList6[len(snakeList6) - 1][0] - block_size, snakeList6[len(snakeList6) - 1][1]])
+            snakeList6.append([snakeList6[-1][0] - block_size, snakeList6[-1][1]])
         elif status == 4:
-            snakeList6.append([snakeList6[len(snakeList6) - 1][0] + block_size, snakeList6[len(snakeList6) - 1][1]])
+            snakeList6.append([snakeList6[-1][0] + block_size, snakeList6[-1][1]])
         if len(snakeList6) > snakeLength6:
             del snakeList6[0]
 
@@ -615,13 +588,13 @@ def gameLoop():
         status = snakeBot(snakeList7, appleList,
                           snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList8)
         if status == 1:
-            snakeList7.append([snakeList7[len(snakeList7) - 1][0], snakeList7[len(snakeList7) - 1][1] - block_size])
+            snakeList7.append([snakeList7[-1][0], snakeList7[-1][1] - block_size])
         elif status == 2:
-            snakeList7.append([snakeList7[len(snakeList7) - 1][0], snakeList7[len(snakeList7) - 1][1] + block_size])
+            snakeList7.append([snakeList7[-1][0], snakeList7[-1][1] + block_size])
         elif status == 3:
-            snakeList7.append([snakeList7[len(snakeList7) - 1][0] - block_size, snakeList7[len(snakeList7) - 1][1]])
+            snakeList7.append([snakeList7[-1][0] - block_size, snakeList7[-1][1]])
         elif status == 4:
-            snakeList7.append([snakeList7[len(snakeList7) - 1][0] + block_size, snakeList7[len(snakeList7) - 1][1]])
+            snakeList7.append([snakeList7[-1][0] + block_size, snakeList7[-1][1]])
         if len(snakeList7) > snakeLength7:
             del snakeList7[0]
 
@@ -629,67 +602,67 @@ def gameLoop():
         status = snakeBot(snakeList8, appleList,
                           snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7)
         if status == 1:
-            snakeList8.append([snakeList8[len(snakeList8) - 1][0], snakeList8[len(snakeList8) - 1][1] - block_size])
+            snakeList8.append([snakeList8[-1][0], snakeList8[-1][1] - block_size])
         elif status == 2:
-            snakeList8.append([snakeList8[len(snakeList8) - 1][0], snakeList8[len(snakeList8) - 1][1] + block_size])
+            snakeList8.append([snakeList8[-1][0], snakeList8[-1][1] + block_size])
         elif status == 3:
-            snakeList8.append([snakeList8[len(snakeList8) - 1][0] - block_size, snakeList8[len(snakeList8) - 1][1]])
+            snakeList8.append([snakeList8[-1][0] - block_size, snakeList8[-1][1]])
         elif status == 4:
-            snakeList8.append([snakeList8[len(snakeList8) - 1][0] + block_size, snakeList8[len(snakeList8) - 1][1]])
+            snakeList8.append([snakeList8[-1][0] + block_size, snakeList8[-1][1]])
         if len(snakeList8) > snakeLength8:
             del snakeList8[0]
 
 
-        # 플레이어의 머리와 타 플레이어의 몸통이 부딛힐 경우 게임 종료
+        # When the head of the player and the body of the other player are hit, the game ends
         if start != 0:
-            if snakeList[len(snakeList)-1] in snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if snakeList[-1] in snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 gameOver = True
 
-        # 컴퓨터끼리 부딛힐 경우, 밖으로 나갈 경우, 사과로 바뀌고 컴퓨터 초기화
+        # If the computer crashes or goes out, replaced with apple and reset
         appleAddList = []
         removeSnake2 = removeSnake3 = removeSnake4 = removeSnake5 = removeSnake6 = removeSnake7 = removeSnake8 = False
 
-        if snakeList2[len(snakeList2) - 1] in snakeList + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+        if snakeList2[-1] in snakeList + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
             appleAddList += snakeList2
             removeSnake2 = True
-        if snakeList3[len(snakeList3) - 1] in snakeList + snakeList2 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+        if snakeList3[-1] in snakeList + snakeList2 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
             appleAddList += snakeList3
             removeSnake3 = True
-        if snakeList4[len(snakeList4) - 1] in snakeList + snakeList2 + snakeList3 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+        if snakeList4[-1] in snakeList + snakeList2 + snakeList3 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
             appleAddList += snakeList4
             removeSnake4 = True
-        if snakeList5[len(snakeList5) - 1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList6 + snakeList7 + snakeList8:
+        if snakeList5[-1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList6 + snakeList7 + snakeList8:
             appleAddList += snakeList5
             removeSnake5 = True
-        if snakeList6[len(snakeList6) - 1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList7 + snakeList8:
+        if snakeList6[-1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList7 + snakeList8:
             appleAddList += snakeList6
             removeSnake6 = True
-        if snakeList7[len(snakeList7) - 1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList8:
+        if snakeList7[-1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList8:
             appleAddList += snakeList7
             removeSnake7 = True
-        if snakeList8[len(snakeList8) - 1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7:
+        if snakeList8[-1] in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7:
             appleAddList += snakeList8
             removeSnake8 = True
 
-        if snakeList2[len(snakeList2) - 1][0] >= display_width or snakeList2[len(snakeList2) - 1][0] < 0 or snakeList2[len(snakeList2) - 1][1] >= display_height or snakeList2[len(snakeList2) - 1][1] < 0:
+        if snakeList2[-1][0] >= display_width or snakeList2[-1][0] < 0 or snakeList2[-1][1] >= display_height or snakeList2[-1][1] < 0:
             #appleAddList += snakeList2
             removeSnake2 = True
-        if snakeList3[len(snakeList3) - 1][0] >= display_width or snakeList3[len(snakeList3) - 1][0] < 0 or snakeList3[len(snakeList3) - 1][1] >= display_height or snakeList3[len(snakeList3) - 1][1] < 0:
+        if snakeList3[-1][0] >= display_width or snakeList3[-1][0] < 0 or snakeList3[-1][1] >= display_height or snakeList3[-1][1] < 0:
             #appleAddList += snakeList3
             removeSnake3 = True
-        if snakeList4[len(snakeList4) - 1][0] >= display_width or snakeList4[len(snakeList4) - 1][0] < 0 or snakeList4[len(snakeList4) - 1][1] >= display_height or snakeList4[len(snakeList4) - 1][1] < 0:
+        if snakeList4[-1][0] >= display_width or snakeList4[-1][0] < 0 or snakeList4[-1][1] >= display_height or snakeList4[-1][1] < 0:
             #appleAddList += snakeList4
             removeSnake4 = True
-        if snakeList5[len(snakeList5) - 1][0] >= display_width or snakeList5[len(snakeList5) - 1][0] < 0 or snakeList5[len(snakeList5) - 1][1] >= display_height or snakeList5[len(snakeList5) - 1][1] < 0:
+        if snakeList5[-1][0] >= display_width or snakeList5[-1][0] < 0 or snakeList5[-1][1] >= display_height or snakeList5[-1][1] < 0:
             #appleAddList += snakeList5
             removeSnake5 = True
-        if snakeList6[len(snakeList6) - 1][0] >= display_width or snakeList6[len(snakeList6) - 1][0] < 0 or snakeList6[len(snakeList6) - 1][1] >= display_height or snakeList6[len(snakeList6) - 1][1] < 0:
+        if snakeList6[-1][0] >= display_width or snakeList6[-1][0] < 0 or snakeList6[-1][1] >= display_height or snakeList6[-1][1] < 0:
             #appleAddList += snakeList6
             removeSnake6 = True
-        if snakeList7[len(snakeList7) - 1][0] >= display_width or snakeList7[len(snakeList7) - 1][0] < 0 or snakeList7[len(snakeList7) - 1][1] >= display_height or snakeList7[len(snakeList7) - 1][1] < 0:
+        if snakeList7[-1][0] >= display_width or snakeList7[-1][0] < 0 or snakeList7[-1][1] >= display_height or snakeList7[-1][1] < 0:
             #appleAddList += snakeList7
             removeSnake7 = True
-        if snakeList8[len(snakeList8) - 1][0] >= display_width or snakeList8[len(snakeList8) - 1][0] < 0 or snakeList8[len(snakeList8) - 1][1] >= display_height or snakeList8[len(snakeList8) - 1][1] < 0:
+        if snakeList8[-1][0] >= display_width or snakeList8[-1][0] < 0 or snakeList8[-1][1] >= display_height or snakeList8[-1][1] < 0:
             #appleAddList += snakeList8
             removeSnake8 = True
 
@@ -723,42 +696,35 @@ def gameLoop():
             randPosition = [round(random.randrange(0, display_width - block_size) / 20.0) * 20.0,
                             round(random.randrange(0, display_width - block_size) / 20.0) * 20.0]
 
-            # 컴퓨터 값 지정
-            if len(
-                    snakeList2) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            # Specify computer values
+            if len(snakeList2) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList2.append(randPosition)
                 continue
-            if len(
-                    snakeList3) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList3) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList3.append(randPosition)
                 continue
-            if len(
-                    snakeList4) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList4) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList4.append(randPosition)
                 continue
-            if len(
-                    snakeList5) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList5) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList5.append(randPosition)
                 continue
-            if len(
-                    snakeList6) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList6) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList6.append(randPosition)
                 continue
-            if len(
-                    snakeList7) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList7) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList7.append(randPosition)
                 continue
-            if len(
-                    snakeList8) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
+            if len(snakeList8) == 0 and randPosition not in snakeList + snakeList2 + snakeList3 + snakeList4 + snakeList5 + snakeList6 + snakeList7 + snakeList8:
                 snakeList8.append(randPosition)
                 continue
 
-            # 종료조건
+            # Termination condition
             if len(snakeList) > 0 and len(snakeList2) > 0 and len(snakeList3) > 0 and len(snakeList4) > 0 and len(
                     snakeList5) > 0 and len(snakeList6) > 0 and len(snakeList7) > 0 and len(snakeList8) > 0:
                 break
 
-        # 게임 화면에 구현
+        # Implemented on the game screen
         gameDisplay.fill(black)
         if fancy_graphic:
             gameDisplay.blit(bg, (0, 0))
@@ -775,10 +741,10 @@ def gameLoop():
         snake(block_size, snakeList7, 7)
         snake(block_size, snakeList8, 8)
 
-        # 화면 업데이트
+        # Screen update
         pygame.display.update()
 
-        # 다음 틱까지 대기
+        # Wait till next tick
         clock.tick(fps)
 
     pygame.quit()
